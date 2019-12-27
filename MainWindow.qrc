@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="MainWindow">
+    </qresource>
+	<qresource prefix="/images">
+        <file alias="TrayIcon">TrayIcon.png</file>
+    </qresource>
+</RCC>
