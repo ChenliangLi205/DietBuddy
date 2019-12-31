@@ -24,7 +24,7 @@ public:
 	bool shouldStop;
 	int minutesFromLastDrink, interval;
 	QMutex shouldStopLock, intervalLock;
-	timeRecorder(QObject* parent=Q_NULLPTR);
+	timeRecorder(int interval, QObject* parent=Q_NULLPTR);
 	void run();
 	void stop();
 private:

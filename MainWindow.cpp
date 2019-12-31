@@ -30,8 +30,9 @@ MainWindow::MainWindow(int screenWidth, int screenHeight, QWidget *parent)
 	: QMainWindow(parent)
 {
 	this->resize(screenWidth/3, screenHeight/3);
-	this->setWindowFlags(this->windowFlags() & ~Qt::WindowMinimizeButtonHint);
+	this->setWindowFlags(Qt::WindowCloseButtonHint);
 	this->setWindowTitle(QString::fromLocal8Bit("Diet Buddy Ê³°é"));
+	this->setWindowOpacity(0.95);
 	
 	SYSTEMTIME sysTime;
 	GetLocalTime(&sysTime);
@@ -74,6 +75,7 @@ MainWindow::MainWindow(int screenWidth, int screenHeight, QWidget *parent)
 	this->trayMenu->addAction(quitAction);
 	this->tray->setContextMenu(trayMenu);
 
+	//ui
 	this->newCentralWidget = new QWidget(this);
 	this->mainLayout = new QVBoxLayout(this);
 	this->timeLayout = new QHBoxLayout(this);
@@ -81,7 +83,7 @@ MainWindow::MainWindow(int screenWidth, int screenHeight, QWidget *parent)
 	this->setIntervalLayout = new QHBoxLayout(this);
 	this->intervalTextLayout = new QHBoxLayout(this);
 
-	//add labels for text information
+	//ui
 	this->timeLayout->addWidget(timeLabel);
 	this->drinkLayout->addWidget(drinkLabel);
 	this->drinkLayout->addWidget(drinkButton);
@@ -99,7 +101,7 @@ MainWindow::MainWindow(int screenWidth, int screenHeight, QWidget *parent)
 	this->keepHided = false;
 	this->closeAnyway = false;
 
-	this->timeRecorderThread = new timeRecorder(this);
+	this->timeRecorderThread = new timeRecorder(this->intervalSpinBox->value(), this);
 	QObject::connect(this->timeRecorderThread, &timeRecorder::drinkSignal, this, &MainWindow::onReceiveDrinkMessage);
 	this->timeRecorderThread->start();
 }
@@ -163,9 +165,10 @@ void MainWindow::onIntervalSpinBoxChanged()
 	this->timeRecorderThread->intervalLock.unlock();
 }
 
-timeRecorder::timeRecorder(QObject* parent) : QThread(parent)
+timeRecorder::timeRecorder(int interval, QObject* parent) : QThread(parent)
 {
 	this->shouldStop = false;
+	this->interval = interval;
 	this->minutesFromLastDrink = 0;
 }
 
@@ -209,7 +212,7 @@ void timeRecorder::run()
 				intervalLock.unlock();
 			}	
 		}
-		sleep(60);
+		msleep(500);
 	}
 }
 
